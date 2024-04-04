@@ -121,7 +121,7 @@ end
 M.setup = function(user_config)
   M.config = vim.tbl_deep_extend("force", M.config, user_config or {})
 
-  if M.config.automatic and dirname_in_path() then
+  if M.config.automatic == "ignore_path" or (M.config.automatic and dirname_in_path()) then
     vim.api.nvim_create_autocmd(
       "BufNewFile",
       { pattern = "*",
