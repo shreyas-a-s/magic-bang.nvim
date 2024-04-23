@@ -21,6 +21,7 @@ M.config = {
   automatic = true,
   command = true,
   executable = true,
+  extra_paths = {},
   default = "/bin/bash"
 }
 
@@ -73,6 +74,15 @@ local function get_shebang(ext)
   end
 
   return shebang
+end
+
+local function check_against_globs(globs, path)
+    for _, glob in ipairs(globs) do
+        if path:match(glob) ~= nil then
+            return true
+        end
+    end
+    return false
 end
 
 local magicbang_grp = vim.api.nvim_create_augroup("magic-bang", { clear = true })
@@ -152,6 +162,22 @@ M.setup = function(user_config)
          sort(bangs)
          return filter(bangs, arg_lead)
        end,
+      }
+    )
+  end
+
+  local filepath = vim.api.nvim_buf_get_name(0)
+  local extra_paths = M.config.extra_paths
+  if extra_paths and check_against_globs(extra_paths, filepath) then
+    vim.api.nvim_create_autocmd(
+      "BufNewFile",
+      { pattern = "*",
+       callback = function()
+          local shebang = get_shebang()
+          M.insert_shebang(shebang)
+        end,
+       desc = "Auto insert shebang for files that match extra_paths",
+       group = magicbang_grp
       }
     )
   end
