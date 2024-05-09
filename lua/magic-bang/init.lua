@@ -76,15 +76,6 @@ local function get_shebang(ext)
   return shebang
 end
 
-local function check_against_globs(globs, path)
-    for _, glob in ipairs(globs) do
-        if path:match(glob) ~= nil then
-            return true
-        end
-    end
-    return false
-end
-
 local magicbang_grp = vim.api.nvim_create_augroup("magic-bang", { clear = true })
 
 M.insert_shebang = function(shebang)
@@ -166,12 +157,11 @@ M.setup = function(user_config)
     )
   end
 
-  local filepath = vim.api.nvim_buf_get_name(0)
   local extra_paths = M.config.extra_paths
-  if extra_paths and check_against_globs(extra_paths, filepath) then
+  if extra_paths then
     vim.api.nvim_create_autocmd(
       "BufNewFile",
-      { pattern = "*",
+      { pattern = extra_paths,
        callback = function()
           local shebang = get_shebang()
           M.insert_shebang(shebang)
