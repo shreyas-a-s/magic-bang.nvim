@@ -166,7 +166,7 @@ M.setup = function(user_config)
           local shebang = get_shebang()
           M.insert_shebang(shebang)
         end,
-       desc = "Auto insert shebang for files that match extra_paths",
+       desc = "Auto insert shebang by checking extra_paths",
        group = magicbang_grp
       }
     )
